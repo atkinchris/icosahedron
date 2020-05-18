@@ -8,6 +8,18 @@
         margin: 0;
       }
 
+      .debug-texture {
+        display: inline-block;
+        width: 20%;
+        height: auto;
+
+        z-index: 2;
+      }
+
+      .debug-texture + .renderer {
+        opacity: 0.3;
+      }
+
       .renderer {
         display: block;
         max-width: 600px;
@@ -31,6 +43,8 @@
     <script src="//cdn.rawgit.com/mrdoob/three.js/r116/examples/js/lines/LineSegments2.js"></script>
     <script src="//cdn.rawgit.com/mrdoob/three.js/r116/examples/js/lines/Line2.js"></script>
     <script src="//cdn.rawgit.com/mrdoob/three.js/r116/examples/js/lines/Wireframe.js"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
 
     <script src="script.js"></script>
   </body>
