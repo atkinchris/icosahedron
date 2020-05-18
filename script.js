@@ -2,8 +2,29 @@ const size = 10
 const textMargin = 1
 const width = 600
 const height = 600
-const fontColour = '#000000'
-const backColour = '#ffffff'
+
+const FACE_TEXT_MAP = [
+  '1',
+  '2',
+  '3',
+  '4',
+  '5',
+  '6',
+  '7',
+  '8',
+  '9',
+  '10',
+  '11',
+  '12',
+  '13',
+  '14',
+  '15',
+  '16',
+  '17',
+  '18',
+  '19',
+  '20',
+]
 
 // Camera and scene
 const aspect = width / height
@@ -22,13 +43,7 @@ const scene = new THREE.Scene()
 
 // Material and geometry
 
-const material = new THREE.MeshPhongMaterial({
-  specular: 0xa02a10,
-  shininess: 50,
-  emissive: 0xd5210a,
-})
-
-const createTextTexture = (text, color, backColour) => {
+const createTextTexture = (text) => {
   const canvas = document.createElement('canvas')
   const context = canvas.getContext('2d')
   const ts = 512
@@ -37,11 +52,11 @@ const createTextTexture = (text, color, backColour) => {
   canvas.height = ts
 
   context.font = '120pt Arial'
-  context.fillStyle = backColour
+  context.fillStyle = '#d5210a'
   context.fillRect(0, 0, canvas.width, canvas.height)
   context.textAlign = 'center'
   context.textBaseline = 'middle'
-  context.fillStyle = color
+  context.fillStyle = 'rgba(0, 0, 0, 0.8)'
   context.fillText(text, canvas.width / 2, canvas.height / 2)
 
   if (text == '6' || text == '9') {
@@ -57,16 +72,10 @@ const createTextTexture = (text, color, backColour) => {
 const materials = []
 
 for (let i = 0; i < 20; i += 1) {
-  const texture = createTextTexture(i + 1, fontColour, backColour)
+  const texture = createTextTexture(FACE_TEXT_MAP[i])
 
   materials.push(
-    new THREE.MeshPhongMaterial({
-      specular: 0xa02a10,
-      shininess: 50,
-      emissive: 0xd5210a,
-      flatShading: true,
-      map: texture,
-    })
+    new THREE.MeshLambertMaterial({ map: texture, emissiveMap: texture })
   )
 }
 
@@ -115,17 +124,19 @@ vertices.forEach(([x, y, z]) => {
 
 faces.forEach(([x, y, z, index]) => {
   const face = new THREE.Face3(x, y, z)
-  face.materialIndex = index
+  face.materialIndex = index - 1
   geometry.faces.push(face)
 
   geometry.faceVertexUvs[0].push([
     new THREE.Vector2(0, 0.2),
-    new THREE.Vector2(1, 0.2),
+    new THREE.Vector2(1, 0.35),
     new THREE.Vector2(0.5, 1),
   ])
 })
 
 geometry.computeBoundingSphere()
+geometry.computeFaceNormals()
+geometry.computeVertexNormals()
 
 // const geometry = new THREE.IcosahedronGeometry()
 const mesh = new THREE.Mesh(geometry, materials)
@@ -133,20 +144,24 @@ scene.add(mesh)
 
 // Edges
 
-// const edgesGeometry = new THREE.EdgesGeometry(mesh.geometry)
-// const edgesMaterial = new THREE.LineBasicMaterial({ color: 0xffffff })
-// const edges = new THREE.LineSegments(edgesGeometry, edgesMaterial)
-// edges.renderOrder = 1
-// mesh.add(edges)
+const edgesGeometry = new THREE.WireframeGeometry2(geometry)
+
+const edgesMaterial = new THREE.LineMaterial({ color: 0xffffff, linewidth: 5 })
+edgesMaterial.resolution.set(width, height)
+
+const edgesMesh = new THREE.Wireframe(edgesGeometry, edgesMaterial)
+edgesMesh.computeLineDistances()
+edgesMesh.scale.set(1, 1, 1)
+
+mesh.add(edgesMesh)
+
+// Scale the face geometry so the wireframe always sits on top
+geometry.scale(0.99, 0.99, 0.99)
 
 // Webgl renderer
 
 const renderer = new THREE.WebGLRenderer({ antialias: true })
 renderer.setPixelRatio(window.devicePixelRatio)
-
-// Svg renderer
-
-// const renderer = new three.svgrenderer()
 
 // Renderer
 
@@ -155,10 +170,13 @@ renderer.setSize(width, height, false)
 
 // Lights
 
-const light = new THREE.PointLight(0xffffff, 0.4)
+const light = new THREE.PointLight(0xffffff, 1.4)
 // light.position.set(20, 60, 40)
-light.position.set(-20, 20, 20)
+light.position.set(-20, 20, 30)
 scene.add(light)
+
+const ambientLight = new THREE.AmbientLight(0xcccccc)
+scene.add(ambientLight)
 
 // Set camera
 
@@ -181,7 +199,7 @@ function animate() {
   mesh.rotation.y += 0.015
 
   renderer.render(scene, camera)
-  // requestAnimationFrame(animate)
+  requestAnimationFrame(animate)
 }
 
 animate()
