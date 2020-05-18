@@ -19,13 +19,13 @@ const FACE_TEXT_MAP = [
   '?',
   '?',
   'E',
-  'D',
+  'M',
   'D',
   'Z',
   'E',
   'I',
   'N',
-  'M',
+  'D',
 ]
 
 const run = () => {
@@ -276,14 +276,15 @@ const run = () => {
   mesh.rotation.z += r * 90
 
   function animate() {
+    // Render the scene!
+    renderer.render(scene, camera)
+
     // Rotate the mesh for some life
     mesh.rotation.x += r * 0
     mesh.rotation.y += r * 0.5
     mesh.rotation.z += r * 0
 
-    // Render the scene!
-    renderer.render(scene, camera)
-    requestAnimationFrame(animate)
+    // requestAnimationFrame(animate)
   }
 
   // Start the first frame of animation
