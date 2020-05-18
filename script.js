@@ -32,7 +32,7 @@ const run = () => {
   // Camera and scene
   const aspect = width / height
   // This is the scale factor for the camera - higher = more on screen
-  const d = 2
+  const d = 1
   // Orthographic camera, so everything appears the same size - i.e. no perspective
   const camera = new THREE.OrthographicCamera(
     -d * aspect,
@@ -52,7 +52,7 @@ const run = () => {
     const canvas = document.createElement('canvas')
     const context = canvas.getContext('2d')
     const textureSize = 512
-    const font = `120pt ${FONT}`
+    const font = `130pt ${FONT}`
 
     canvas.width = textureSize
     canvas.height = textureSize
@@ -60,6 +60,15 @@ const run = () => {
     // Fix the canvas first, to set the base colour
     context.fillStyle = '#d5210a'
     context.fillRect(0, 0, canvas.width, canvas.height)
+
+    context.translate(canvas.width / 2, canvas.height / 2)
+    context.rotate((60 * Math.PI) / 180)
+
+    if (parseInt(text, 10) != text) {
+      context.translate(0, 20)
+    }
+
+    context.translate(-canvas.width / 2, -canvas.height / 2)
 
     // Fill the text onto the middle of the canvas
     context.font = font
@@ -159,20 +168,21 @@ const run = () => {
     const tab = -0.2
     const af = -Math.PI / 3 / 2
     const aa = (Math.PI * 2) / 3
-    geometry.faceVertexUvs[0].push([
-      new THREE.Vector2(
-        (Math.cos(af) + 1 + tab) / 2 / (1 + tab),
-        (Math.sin(af) + 1 + tab) / 2 / (1 + tab)
-      ),
-      new THREE.Vector2(
-        (Math.cos(aa * 1 + af) + 1 + tab) / 2 / (1 + tab),
-        (Math.sin(aa * 1 + af) + 1 + tab) / 2 / (1 + tab)
-      ),
-      new THREE.Vector2(
-        (Math.cos(aa * 2 + af) + 1 + tab) / 2 / (1 + tab),
-        (Math.sin(aa * 2 + af) + 1 + tab) / 2 / (1 + tab)
-      ),
-    ])
+
+    const a = new THREE.Vector2(
+      (Math.cos(af) + 1 + tab) / 2 / (1 + tab),
+      (Math.sin(af) + 1 + tab) / 2 / (1 + tab)
+    )
+    const b = new THREE.Vector2(
+      (Math.cos(aa * 1 + af) + 1 + tab) / 2 / (1 + tab),
+      (Math.sin(aa * 1 + af) + 1 + tab) / 2 / (1 + tab)
+    )
+    const c = new THREE.Vector2(
+      (Math.cos(aa * 2 + af) + 1 + tab) / 2 / (1 + tab),
+      (Math.sin(aa * 2 + af) + 1 + tab) / 2 / (1 + tab)
+    )
+
+    geometry.faceVertexUvs[0].push([a, b, c])
   })
 
   // Have THREE compute geometry normals and bounding, to save us doing it manually
@@ -242,7 +252,7 @@ const run = () => {
   scene.add(ambientLight)
 
   // Create a camera and point it at the scene
-  camera.position.set(20, 20, 20)
+  camera.position.set(0, 0, 20)
   camera.lookAt(scene.position)
 
   // Add the renderer to the DOM. This is a canvas element with a class of "renderer"
@@ -251,14 +261,14 @@ const run = () => {
 
   // Rotate the mesh a little for a nicer first side
   mesh.rotation.x += 0
-  mesh.rotation.y += 0
-  mesh.rotation.z += 0
+  mesh.rotation.y += 2.2
+  mesh.rotation.z += 4
 
   function animate() {
     // Rotate the mesh for some life
-    mesh.rotation.x += 0.015
-    mesh.rotation.y += 0.015
-    mesh.rotation.z += 0.015
+    // mesh.rotation.x += 0
+    // mesh.rotation.y += 0.01
+    // mesh.rotation.z += 0.01
 
     // Render the scene!
     renderer.render(scene, camera)
