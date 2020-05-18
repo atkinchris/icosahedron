@@ -6,25 +6,25 @@ const DEBUG_TEXTURES = false
 // A big map of every character that should be on the coresponding side of the die
 // Their index in the array is the numerical position on the die
 const FACE_TEXT_MAP = [
-  '1',
-  '2',
-  '3',
-  '4',
-  '5',
-  '6',
-  '7',
-  '8',
-  '9',
-  '10',
-  '11',
-  '12',
-  '13',
-  '14',
-  '15',
-  '16',
-  '17',
-  '18',
-  '19',
+  '?',
+  '?',
+  '?',
+  '?',
+  '?',
+  '?',
+  '?',
+  '?',
+  'N',
+  'I',
+  '?',
+  '?',
+  'E',
+  'D',
+  'D',
+  'Z',
+  'E',
+  'I',
+  'N',
   'M',
 ]
 
@@ -52,34 +52,44 @@ const run = () => {
     const canvas = document.createElement('canvas')
     const context = canvas.getContext('2d')
     const textureSize = 512
-    const font = `130pt ${FONT}`
+    const font = `140pt ${FONT}`
 
     canvas.width = textureSize
     canvas.height = textureSize
 
     // Fix the canvas first, to set the base colour
-    context.fillStyle = '#d5210a'
+    context.fillStyle = '#e54c28'
     context.fillRect(0, 0, canvas.width, canvas.height)
 
-    context.translate(canvas.width / 2, canvas.height / 2)
-    context.rotate((60 * Math.PI) / 180)
+    // context.translate(canvas.width / 2, canvas.height / 2)
+    // context.rotate((60 * Math.PI) / 180)
 
     if (parseInt(text, 10) != text) {
-      context.translate(0, 20)
+      context.translate(0, 30)
     }
 
-    context.translate(-canvas.width / 2, -canvas.height / 2)
+    // context.translate(-canvas.width / 2, -canvas.height / 2)
 
     // Fill the text onto the middle of the canvas
     context.font = font
     context.textAlign = 'center'
     context.textBaseline = 'middle'
-    context.fillStyle = 'rgba(0, 0, 0, 0.8)'
+    context.fillStyle = 'white'
+    context.strokeStyle = 'rgb(25, 25, 25)'
+    context.lineWidth = 10
+
+    if (text === 'M') {
+      context.font = `bold 150pt ${FONT}`
+    }
+
+    // context.strokeText(text, canvas.width / 2, canvas.height / 2)
     context.fillText(text, canvas.width / 2, canvas.height / 2)
 
     // If the text is a vertically ambiguous character, add a dot after it, to designate orientation
     if (text == '6' || text == '9') {
-      context.fillText('   .', canvas.width / 2, canvas.height / 2)
+      const indicator = '   .'
+      // context.strokeText(indicator, canvas.width / 2, canvas.height / 2)
+      context.fillText(indicator, canvas.width / 2, canvas.height / 2)
     }
 
     // If DEBUG_TEXTURES is enabled, add the texture canvas to the body so we can see what was rendered
@@ -242,7 +252,7 @@ const run = () => {
 
   // Create a Point light for illuminating the top left of the shape
   // This helps with the 3D effect
-  const light = new THREE.PointLight(0xffffff, 1.4)
+  const light = new THREE.PointLight(0xcccccc, 0.6)
   light.position.set(-20, 20, 30)
   scene.add(light)
 
@@ -260,15 +270,16 @@ const run = () => {
   document.body.appendChild(renderer.domElement)
 
   // Rotate the mesh a little for a nicer first side
-  mesh.rotation.x += 0
-  mesh.rotation.y += 2.2
-  mesh.rotation.z += 4
+  const r = Math.PI / 180
+  mesh.rotation.x += r * 150
+  mesh.rotation.y += r * 0
+  mesh.rotation.z += r * 90
 
   function animate() {
     // Rotate the mesh for some life
-    // mesh.rotation.x += 0
-    // mesh.rotation.y += 0.01
-    // mesh.rotation.z += 0.01
+    mesh.rotation.x += r * 0
+    mesh.rotation.y += r * 0.5
+    mesh.rotation.z += r * 0
 
     // Render the scene!
     renderer.render(scene, camera)
